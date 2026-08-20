@@ -1,6 +1,6 @@
 # IOT
 
-## Practical 2 — Python Word & Character Count
+## Practical 2 — Run python program on Pi having problem statement: word and character count of a given string.
 **File: `word_char_count.py`**<br>
 **This is a normal Python program, not a Wokwi hardware simulation.**
 ```
@@ -19,7 +19,7 @@ print("Number of Characters:", char_count)
 **Note:- Example Image**<br>
 ![image alt](https://github.com/Sudo-003/IOT/blob/4f6ddbe8085da1e020e5336c024210da9596a2a4/Practical-2.png)<br>
 
-## Practical 3 — Raspberry Pi Pico + PIR Sensor
+## Practical 3 — Exercise on working principle of Raspberry Pi.with 40 PIN Interface component
 ![image alt](https://github.com/Sudo-003/IOT/blob/4d68ce4f098020dd1ee059ce7d923dba107cd161/Practical-3.png)
 
 **Sketch.ino**
@@ -106,7 +106,7 @@ while True:
         print("LED OFF")
 
 ```
-## Practical 5 — Connect Arduino to Wi-Fi
+## Practical 5 — Connect with the Available Wi-Fi Using Arduino
 **Board :- Use an ESP32 in Wokwi.** <br>
 **sketch.ino**
 ```
@@ -145,7 +145,7 @@ void loop() {
 }
 
 ```
-## Practical 6 — Temperature & Humidity from Thing Speak 
+## Practical 6 — Write a program on Raspberry Pi to retrieve temperature and humidity data from thing speak cloud 
 **Board :- Raspberry Pi Pico W / suitable Wi-Fi MicroPython board** <br>
 **sketch.ino**
 
@@ -192,4 +192,78 @@ while True:
     time.sleep(20)
 
 ```
-## Practical 7 — Publish Temperature Data to MQTT (Message Queuing Telemetry Transport) 
+## Practical 7 — Write a program on Raspberry Pi to publish temperature data to MQTT broker (Message Queuing Telemetry Transport) 
+![image alt](https://github.com/Sudo-003/IOT/blob/49f338683cda7932bbb9e4f310aa0480921d3193/Practical-7.png) <br>
+
+**main.py**
+```
+import network
+import time
+from machine import Pin
+import dht
+import ujson
+from umqtt.simple import MQTTClient
+
+# MQTT Server Parameters
+MQTT_CLIENT_ID = "micropython-weather-demo"
+MQTT_BROKER    = "broker.mqttdashboard.com"
+MQTT_USER      = ""
+MQTT_PASSWORD  = ""
+MQTT_TOPIC     = "wokwi-weather"
+
+sensor = dht.DHT22(Pin(15))
+
+print("Connecting to WiFi", end="")
+sta_if = network.WLAN(network.STA_IF)
+sta_if.active(True)
+sta_if.connect('Wokwi-GUEST', '')
+while not sta_if.isconnected():
+  print(".", end="")
+  time.sleep(0.1)
+print(" Connected!")
+
+print("Connecting to MQTT server... ", end="")
+client = MQTTClient(MQTT_CLIENT_ID, MQTT_BROKER, user=MQTT_USER, password=MQTT_PASSWORD)
+client.connect()
+
+print("Connected!")
+
+prev_weather = ""
+while True:
+  print("Measuring weather conditions... ", end="")
+  sensor.measure() 
+  message = ujson.dumps({
+    "temp": sensor.temperature(),
+    "humidity": sensor.humidity(),
+  })
+  if message != prev_weather:
+    print("Updated!")
+    print("Reporting to MQTT topic {}: {}".format(MQTT_TOPIC, message))
+    client.publish(MQTT_TOPIC, message)
+    prev_weather = message
+  else:
+    print("No change")
+  time.sleep(1)
+
+```
+**diagram.json**
+```
+{
+  "version": 1,
+  "editor": "wokwi",
+  "parts": [
+    { "type": "board-esp32-devkit-c-v4", "id": "esp", "top": -37.58, "left": -96.37, "attrs": {} },
+    { "type": "wokwi-dht22", "id": "dht1", "top": -32.2, "left": 40.16, "attrs": {} }
+  ],
+  "connections": [
+    [ "esp:TX", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX", "$serialMonitor:TX", "", [] ],
+    [ "dht1:VCC", "esp:3V3", "red", [ "v109.3", "h-170.36", "v-200.78" ] ],
+    [ "dht1:SDA", "esp:15", "green", [ "v0" ] ],
+    [ "dht1:GND", "esp:GND.1", "black", [ "v99.7", "h-189.56", "v-66.38" ] ]
+  ],
+  "dependencies": {}
+}
+
+```
+## Practical 8 — Connect Raspberry Pi with your existing system components
