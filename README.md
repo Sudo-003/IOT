@@ -15,7 +15,10 @@ print("Number of Words:", word_count)
 print("Number of Characters:", char_count)
 
 ```
+![image alt](https://github.com/Sudo-003/IOT/blob/4f6ddbe8085da1e020e5336c024210da9596a2a4/Practical-2.png)<br>
+
 ***Practical 3 — Raspberry Pi Pico + PIR Sensor***<br>
+
 **I recommend using Serial so the output is visible in Wokwi's Serial Monitor**
 ```
 void setup() {
@@ -39,3 +42,5 @@ void loop() {
 }
 
 ```
+
+
